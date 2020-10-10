@@ -459,7 +459,7 @@ module InvoicePrinter
         @pdf.stroke_rounded_rectangle([0, y(508) - @push_down], x(266), @payment_box_height, 6)
       else
         @payment_box_height = 60
-        @push_iban = 0
+        @push_swift = 0
         sublabel_change = 0
         @pdf.text_box(
           @labels[:payment_by_transfer],
@@ -495,53 +495,18 @@ module InvoicePrinter
           @payment_box_height -= 10
           sublabel_change -= 10
         end
-        unless @document.account_swift.empty?
+        unless @document.account_iban.empty?
           @pdf.text_box(
-            "#{@labels[:swift]}",
+            "#{@labels[:iban]}",
             size: 11,
             at: [10, y(453) - @push_down - sublabel_change],
             width: x(134),
             overflow: :shrink_to_fit,
           )
           @pdf.text_box(
-            @document.account_swift,
-            size: 13,
-            at: [21, y(453) -  @push_down - sublabel_change],
-            width: x(234),
-            align: :right,
-            overflow: :shrink_to_fit,
-          )
-
-          if used? @labels[:sublabels][:swift]
-            @pdf.text_box(
-              "#{@labels[:sublabels][:swift]}",
-              size: 10,
-              at: [10, y(438) - @push_down - sublabel_change],
-              width: x(334),
-              overflow: :shrink_to_fit,
-            )
-            @push_items_table += 10
-          else
-            @payment_box_height -= 10
-            sublabel_change -= 10
-          end
-
-          @payment_box_height += 30
-          @push_iban = 30
-          @push_items_table += 18
-        end
-        unless @document.account_iban.empty?
-          @pdf.text_box(
-            "#{@labels[:iban]}",
-            size: 11,
-            at: [10, y(453) - @push_iban - @push_down - sublabel_change],
-            width: x(134),
-            overflow: :shrink_to_fit,
-          )
-          @pdf.text_box(
             @document.account_iban,
             size: 13,
-            at: [21, y(453) - @push_iban - @push_down - sublabel_change],
+            at: [21, y(453) - @push_down - sublabel_change],
             width: x(234),
             align: :right,
             overflow: :shrink_to_fit,
@@ -551,13 +516,48 @@ module InvoicePrinter
             @pdf.text_box(
               "#{@labels[:sublabels][:iban]}",
               size: 10,
-              at: [10, y(438) - @push_iban - @push_down - sublabel_change],
+              at: [10, y(438) - @push_down - sublabel_change],
               width: x(334),
               overflow: :shrink_to_fit,
             )
             @push_items_table += 10
           else
             @payment_box_height -= 10
+          end
+
+          @push_swift = 20
+          @payment_box_height += 30
+          @push_items_table += 18
+        end
+        unless @document.account_swift.empty?
+          @pdf.text_box(
+            "#{@labels[:swift]}",
+            size: 11,
+            at: [10, y(453) - @push_swift - @push_down - sublabel_change],
+            width: x(134),
+            overflow: :shrink_to_fit,
+          )
+          @pdf.text_box(
+            @document.account_swift,
+            size: 13,
+            at: [21, y(453) - @push_swift -  @push_down - sublabel_change],
+            width: x(234),
+            align: :right,
+            overflow: :shrink_to_fit,
+          )
+
+          if used? @labels[:sublabels][:swift]
+            @pdf.text_box(
+              "#{@labels[:sublabels][:swift]}",
+              size: 10,
+              at: [10, y(438) - @push_swift - @push_down - sublabel_change],
+              width: x(334),
+              overflow: :shrink_to_fit,
+            )
+            @push_items_table += 10
+          else
+            @payment_box_height -= 10
+            sublabel_change -= 10
           end
 
           @payment_box_height += 30

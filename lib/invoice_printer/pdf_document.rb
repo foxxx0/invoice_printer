@@ -459,6 +459,7 @@ module InvoicePrinter
         @pdf.stroke_rounded_rectangle([0, y(508) - @push_down], x(266), @payment_box_height, 6)
       else
         @payment_box_height = 60
+        @push_iban = -20
         @push_swift = 0
         sublabel_change = 0
         @pdf.text_box(
@@ -468,45 +469,48 @@ module InvoicePrinter
           width: x(234),
           overflow: :shrink_to_fit,
         )
-        @pdf.text_box(
-          "#{@labels[:account_number]}",
-          size: 11,
-          at: [10, y(483) - @push_down],
-          width: x(134),
-          overflow: :shrink_to_fit,
-        )
-        @pdf.text_box(
-          @document.bank_account_number,
-          size: 13,
-          at: [21, y(483) - @push_down],
-          width: x(234),
-          align: :right,
-          overflow: :shrink_to_fit,
-        )
-        if used? @labels[:sublabels][:account_number]
+        unless @document.bank_account_number.empty?
           @pdf.text_box(
-            "#{@labels[:sublabels][:account_number]}",
-            size: 10,
-            at: [10, y(468) - @push_down],
-            width: x(334),
+            "#{@labels[:account_number]}",
+            size: 11,
+            at: [10, y(483) - @push_down],
+            width: x(134),
             overflow: :shrink_to_fit,
           )
-        else
-          @payment_box_height -= 10
-          sublabel_change -= 10
+          @pdf.text_box(
+            @document.bank_account_number,
+            size: 13,
+            at: [21, y(483) - @push_down],
+            width: x(234),
+            align: :right,
+            overflow: :shrink_to_fit,
+          )
+          if used? @labels[:sublabels][:account_number]
+            @pdf.text_box(
+              "#{@labels[:sublabels][:account_number]}",
+              size: 10,
+              at: [10, y(468) - @push_down],
+              width: x(334),
+              overflow: :shrink_to_fit,
+            )
+          else
+            @payment_box_height -= 10
+            sublabel_change -= 10
+          end
+          @push_iban = 0
         end
         unless @document.account_iban.empty?
           @pdf.text_box(
             "#{@labels[:iban]}",
             size: 11,
-            at: [10, y(453) - @push_down - sublabel_change],
+            at: [10, y(453) - @push_iban - @push_down - sublabel_change],
             width: x(134),
             overflow: :shrink_to_fit,
           )
           @pdf.text_box(
             @document.account_iban,
             size: 13,
-            at: [21, y(453) - @push_down - sublabel_change],
+            at: [21, y(453) - @push_iban - @push_down - sublabel_change],
             width: x(234),
             align: :right,
             overflow: :shrink_to_fit,
@@ -516,7 +520,7 @@ module InvoicePrinter
             @pdf.text_box(
               "#{@labels[:sublabels][:iban]}",
               size: 10,
-              at: [10, y(438) - @push_down - sublabel_change],
+              at: [10, y(438) - @push_iban - @push_down - sublabel_change],
               width: x(334),
               overflow: :shrink_to_fit,
             )
@@ -533,14 +537,14 @@ module InvoicePrinter
           @pdf.text_box(
             "#{@labels[:swift]}",
             size: 11,
-            at: [10, y(453) - @push_swift - @push_down - sublabel_change],
+            at: [10, y(453) - @push_iban - @push_swift - @push_down - sublabel_change],
             width: x(134),
             overflow: :shrink_to_fit,
           )
           @pdf.text_box(
             @document.account_swift,
             size: 13,
-            at: [21, y(453) - @push_swift -  @push_down - sublabel_change],
+            at: [21, y(453) - @push_iban - @push_swift -  @push_down - sublabel_change],
             width: x(234),
             align: :right,
             overflow: :shrink_to_fit,
@@ -550,7 +554,7 @@ module InvoicePrinter
             @pdf.text_box(
               "#{@labels[:sublabels][:swift]}",
               size: 10,
-              at: [10, y(438) - @push_swift - @push_down - sublabel_change],
+              at: [10, y(438) - @push_iban - @push_swift - @push_down - sublabel_change],
               width: x(334),
               overflow: :shrink_to_fit,
             )

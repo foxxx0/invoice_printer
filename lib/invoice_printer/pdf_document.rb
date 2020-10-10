@@ -440,7 +440,7 @@ module InvoicePrinter
       end
       @payment_box_height = min_height
 
-      if @document.bank_account_number.empty?
+      if @document.bank_account_number.empty? && @document.account_iban.empty?
         @pdf.text_box(
           @labels[:payment],
           size: 10,
